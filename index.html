@@ -1,0 +1,1157 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>魔女の薬草工房</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#4c3a60" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet" />
+    <style>
+      button, [role="button"] { min-height: 2rem; }
+
+      :root {
+        --bg: #4c3a60;
+        --bg-deep: #36264b;
+        --panel: #514069;
+        --panel-edge: #6d568a;
+        --ink: #f8eff9;
+        --ink-soft: #dbc4e6;
+        --cell: #614e7c;
+        --cell-edge: #715a92;
+        --locked: #3f334d;
+        --locked-edge: #473a56;
+        --locked-ink: #c9b6da;
+        --accent: #c65d9e;
+        --accent-deep: #a8437f;
+        --accent-ink: #fff5fa;
+        --danger: #d97a68;
+        --drop: #f0a6c8;
+        --shadow: 0 2px 8px rgba(12, 5, 20, 0.4);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #2d203b;
+          --bg-deep: #23152f;
+          --panel: #38284a;
+          --panel-edge: #4e3a66;
+          --ink: #f3e8f6;
+          --ink-soft: #c8aed6;
+          --cell: #47355c;
+          --cell-edge: #553f6e;
+          --locked: #2c2436;
+          --locked-edge: #352b42;
+          --locked-ink: #bda9cc;
+          --accent: #c05f9c;
+          --accent-deep: #d67eb2;
+          --accent-ink: #fff5fa;
+          --danger: #da8d7c;
+          --drop: #eda0c6;
+          --shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Noto Sans JP", sans-serif;
+        background: linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+        color: var(--ink);
+        min-height: 100vh;
+        -webkit-tap-highlight-color: transparent;
+      }
+      main {
+        max-width: 430px;
+        margin: 0 auto;
+        padding: 14px 14px calc(env(safe-area-inset-bottom, 0px) + 36px);
+      }
+
+      .mood {
+        text-align: center;
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        margin: 2px 0 12px;
+        letter-spacing: 0.04em;
+      }
+
+      /* ---------- Header: level badge, XP bar, menu ---------- */
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .lv-block {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+      #lv-badge {
+        flex: none;
+        background: var(--accent);
+        color: var(--accent-ink);
+        font-weight: 900;
+        font-size: 1.02rem;
+        letter-spacing: 0.04em;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        box-shadow: var(--shadow);
+        white-space: nowrap;
+      }
+      #lv-badge.bump { animation: bump 0.7s ease; }
+      @keyframes bump {
+        0% { transform: scale(1); }
+        35% { transform: scale(1.22) rotate(-3deg); }
+        70% { transform: scale(1.08); }
+        100% { transform: scale(1); }
+      }
+      .xp-wrap { min-width: 104px; padding-top: 3px; }
+      .xp-bar {
+        height: 10px;
+        background: var(--locked);
+        border: 1px solid var(--panel-edge);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      #xp-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--drop);
+        border-radius: 999px;
+        transition: width 0.45s ease;
+      }
+      #xp-text {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: var(--ink-soft);
+        margin-top: 3px;
+        white-space: nowrap;
+      }
+
+      .menu-wrap { position: relative; flex: none; }
+      #menu-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: inherit;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--ink);
+        background: var(--panel);
+        border: 1px solid var(--panel-edge);
+        border-radius: 12px;
+        padding: 9px 12px;
+        min-height: 40px;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+      }
+      #menu-btn svg { width: 16px; height: 16px; flex: none; }
+      #menu-panel {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 8px);
+        width: 258px;
+        max-width: calc(100vw - 28px);
+        background: var(--panel);
+        border: 1px solid var(--panel-edge);
+        border-radius: 14px;
+        box-shadow: 0 10px 26px rgba(10, 4, 18, 0.5);
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 40;
+      }
+      #menu-panel[hidden] { display: none; }
+      .menu-item {
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-align: left;
+        color: var(--ink);
+        background: var(--cell);
+        border: 1px solid var(--cell-edge);
+        border-radius: 10px;
+        padding: 10px 12px;
+        min-height: 44px;
+        cursor: pointer;
+        width: 100%;
+      }
+      .menu-item:active { background: var(--panel-edge); }
+      .menu-item:disabled { opacity: 0.55; cursor: default; }
+      .menu-item.danger {
+        color: var(--locked-ink);
+        background: transparent;
+        border-color: var(--locked-edge);
+      }
+      .menu-item.danger.confirm { color: #fff; background: var(--danger); border-color: var(--danger); }
+      .menu-sep { height: 1px; background: var(--panel-edge); margin: 2px 0; }
+      .menu-status { font-size: 0.8rem; line-height: 1.55; color: var(--ink-soft); margin: 0; }
+      .menu-status.error { color: #f2a49b; font-weight: 700; }
+      #import-confirm {
+        background: var(--locked);
+        border: 1px solid var(--locked-edge);
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 0.82rem;
+        line-height: 1.55;
+      }
+      #import-confirm p { margin: 0 0 8px; }
+      #import-confirm .row { display: flex; gap: 8px; }
+      #import-confirm button {
+        flex: 1;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.82rem;
+        color: var(--ink);
+        background: var(--cell);
+        border: 1px solid var(--cell-edge);
+        border-radius: 9px;
+        padding: 9px 6px;
+        min-height: 40px;
+        cursor: pointer;
+      }
+      #import-confirm #import-yes {
+        background: var(--accent);
+        color: var(--accent-ink);
+        border-color: var(--accent);
+      }
+
+      /* ---------- Banner ---------- */
+      .banner {
+        display: block;
+        width: 100%;
+        height: 72px;
+        object-fit: cover;
+        object-position: center 32%;
+        border-radius: 14px;
+        border: 1px solid var(--panel-edge);
+        box-shadow: var(--shadow);
+        margin-bottom: 10px;
+      }
+
+      /* ---------- Board ---------- */
+      .board-wrap {
+        position: relative;
+        background: var(--panel);
+        border: 1px solid var(--panel-edge);
+        border-radius: 18px;
+        padding: 10px;
+        box-shadow: var(--shadow);
+      }
+      .sparkle {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        color: var(--drop);
+        opacity: 0.85;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .sparkle.sp-a { top: -8px; left: -5px; }
+      .sparkle.sp-b { bottom: -8px; right: -5px; transform: rotate(20deg) scale(0.72); }
+      #board {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .cell {
+        position: relative;
+        aspect-ratio: 1 / 1;
+        border-radius: 10px;
+        background: var(--cell);
+        border: 1px solid var(--cell-edge);
+      }
+      .cell.locked {
+        background: var(--locked);
+        border-color: var(--locked-edge);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1px;
+        color: var(--locked-ink);
+      }
+      .cell.locked svg { width: 38%; height: auto; opacity: 0.75; }
+      .cell.locked .lock-lv { font-size: 0.58rem; font-weight: 700; line-height: 1; }
+      .cell.drop-target {
+        outline: 3px solid var(--drop);
+        outline-offset: -3px;
+      }
+      .cell.unlock-flash { animation: unlockflash 1.1s ease-out; }
+      @keyframes unlockflash {
+        0% { background: #9a86b3; box-shadow: inset 0 0 0 3px var(--drop); }
+        100% { background: var(--cell); box-shadow: inset 0 0 0 0 transparent; }
+      }
+
+      .tile {
+        position: absolute;
+        inset: 2px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3px;
+        cursor: grab;
+        touch-action: none;
+        box-shadow: 0 1px 3px rgba(16, 6, 24, 0.4);
+        border: 1px solid rgba(20, 8, 30, 0.25);
+        overflow: hidden;
+      }
+      .tile img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        pointer-events: none;
+      }
+      .tile .num {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        min-width: 15px;
+        height: 15px;
+        padding: 0 3px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: rgba(24, 12, 34, 0.62);
+        color: #fff;
+        font-size: 0.58rem;
+        font-weight: 900;
+        line-height: 1;
+      }
+      .tile.drag-src { opacity: 0.3; }
+      .tile.selected {
+        outline: 3px solid var(--drop);
+        outline-offset: 1px;
+      }
+      .tile.pop { animation: pop 0.28s ease-out; }
+      .tile.spawn { animation: spawn 0.3s ease-out; }
+      @keyframes pop {
+        0% { transform: scale(0.6); }
+        55% { transform: scale(1.14); }
+        100% { transform: scale(1); }
+      }
+      @keyframes spawn {
+        0% { transform: scale(0.4); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      #ghost {
+        position: fixed;
+        z-index: 50;
+        pointer-events: none;
+        border-radius: 8px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 3px;
+        box-shadow: 0 8px 18px rgba(10, 4, 18, 0.5);
+        border: 1px solid rgba(20, 8, 30, 0.3);
+        transform: translate(-50%, -55%) scale(1.06);
+        overflow: hidden;
+      }
+      #ghost img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+      #ghost .num {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        min-width: 15px;
+        height: 15px;
+        padding: 0 3px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: rgba(24, 12, 34, 0.62);
+        color: #fff;
+        font-size: 0.58rem;
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      /* Tile stage colors (each stage its own hue family, kept greyish/muted like Plan B) */
+      .s1  { background: #a8b2c0; color: #39434f; }
+      .s2  { background: #d8ce9c; color: #4d4626; }
+      .s3  { background: #9cc2ae; color: #2f4a3d; }
+      .s4  { background: #86a97e; color: #2c4028; }
+      .s5  { background: #d8a3b2; color: #55303c; }
+      .s6  { background: #c2ac84; color: #4a3c24; }
+      .s7  { background: #a3b8c4; color: #2f3f4a; }
+      .s8  { background: #8f96c8; color: #2e3354; }
+      .s9  { background: #a37fc0; color: #3e2a52; box-shadow: 0 0 9px rgba(163, 127, 192, 0.55), 0 1px 3px rgba(16, 6, 24, 0.4); }
+      .s10 { background: #bfa96f; color: #4d4225; box-shadow: 0 0 11px rgba(191, 169, 111, 0.6), 0 1px 3px rgba(16, 6, 24, 0.4); }
+
+      /* ---------- Harvest bar (shown while a tile is selected) ---------- */
+      #harvest-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+        background: var(--panel);
+        border: 1px solid var(--drop);
+        border-radius: 14px;
+        padding: 8px 8px 8px 14px;
+        box-shadow: var(--shadow);
+      }
+      #harvest-bar[hidden] { display: none; }
+      #harvest-name { flex: 1; font-size: 0.88rem; font-weight: 700; line-height: 1.35; }
+      #harvest-btn {
+        flex: none;
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 900;
+        color: var(--accent-ink);
+        background: var(--accent);
+        border: none;
+        border-radius: 11px;
+        padding: 11px 13px;
+        min-height: 44px;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      #harvest-btn:active { background: var(--accent-deep); }
+      #harvest-cancel {
+        flex: none;
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--ink-soft);
+        background: transparent;
+        border: 1px solid var(--panel-edge);
+        border-radius: 11px;
+        padding: 10px 10px;
+        min-height: 44px;
+        cursor: pointer;
+      }
+
+      /* ---------- Message / controls ---------- */
+      #message {
+        min-height: 1.5em;
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 14px 4px 10px;
+      }
+      .controls {
+        display: flex;
+        gap: 10px;
+        align-items: stretch;
+      }
+      #sow {
+        flex: 1;
+        font-family: inherit;
+        font-size: 1.12rem;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        color: var(--accent-ink);
+        background: var(--accent);
+        border: none;
+        border-radius: 14px;
+        padding: 14px 10px;
+        min-height: 52px;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+      }
+      #sow:active { background: var(--accent-deep); transform: translateY(1px); }
+
+      .hint {
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--ink-soft);
+        line-height: 1.6;
+        margin: 12px 6px 0;
+      }
+
+      /* ---------- Chain legend (collapsible, closed by default) ---------- */
+      .chain {
+        margin-top: 20px;
+        background: var(--panel);
+        border: 1px solid var(--panel-edge);
+        border-radius: 14px;
+        padding: 10px 12px 12px;
+      }
+      .chain summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-height: 2rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--ink-soft);
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        list-style: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .chain summary::-webkit-details-marker { display: none; }
+      .chain summary::after {
+        content: "▾";
+        font-size: 0.8rem;
+        color: var(--drop);
+        transition: transform 0.2s ease;
+      }
+      .chain[open ] summary { margin-bottom: 8px; }
+      .chain[open ] summary::after { transform: rotate(180deg); }
+      .chain ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        align-items: center;
+      }
+      .chain li.chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border-radius: 999px;
+        padding: 3px 8px 3px 4px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        border: 1px solid rgba(20, 8, 30, 0.25);
+      }
+      .chain li.chip b {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        font-size: 0.66rem;
+      }
+      .chain li.chip img {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+        display: block;
+      }
+      .chain li.arrow { color: var(--ink-soft); font-size: 0.66rem; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .tile.pop, .tile.spawn, #lv-badge.bump, .cell.unlock-flash { animation: none; }
+        #xp-fill { transition: none; }
+        #sow:active { transform: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="topbar">
+        <div class="lv-block">
+          <div id="lv-badge" aria-label="プレイヤーレベル">LV 1</div>
+          <div class="xp-wrap">
+            <div class="xp-bar"><div id="xp-fill"></div></div>
+            <div id="xp-text">経験値 0 / 20</div>
+          </div>
+        </div>
+        <div class="menu-wrap">
+          <button id="menu-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="menu-panel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            メニュー
+          </button>
+          <div id="menu-panel" hidden>
+            <button id="export-btn" class="menu-item" type="button">データを書き出す（JSON）</button>
+            <button id="import-btn" class="menu-item" type="button">データを読み込む（JSON）</button>
+            <input id="import-file" type="file" accept=".json,application/json" hidden />
+            <div id="import-confirm" hidden>
+              <p>読み込むと、今の盤面・レベル・経験値は上書きされます。</p>
+              <div class="row">
+                <button id="import-yes" type="button">上書きして読み込む</button>
+                <button id="import-no" type="button">やめる</button>
+              </div>
+            </div>
+            <p id="menu-status" class="menu-status" role="status" hidden></p>
+            <div class="menu-sep"></div>
+            <button id="reset" class="menu-item danger" type="button">リセット（レベルも最初から）</button>
+          </div>
+        </div>
+      </header>
+
+      <img class="banner" src="banner.webp" alt="魔女の薬草工房の棚。光るポーションの瓶と吊るした薬草、丸窓の向こうの三日月と、眠る黒猫" />
+
+      <p class="mood">― 小さな工房で、薬草をのんびり育てる ―</p>
+
+      <div class="board-wrap">
+        <svg class="sparkle sp-a" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L14.4 9.6 L22 12 L14.4 14.4 L12 22 L9.6 14.4 L2 12 L9.6 9.6 Z" fill="currentColor"/></svg>
+        <svg class="sparkle sp-b" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L14.4 9.6 L22 12 L14.4 14.4 L12 22 L9.6 14.4 L2 12 L9.6 9.6 Z" fill="currentColor"/></svg>
+        <div id="board" aria-label="薬草工房のボード"></div>
+      </div>
+
+      <div id="harvest-bar" hidden>
+        <span id="harvest-name"></span>
+        <button id="harvest-btn" type="button">収穫する</button>
+        <button id="harvest-cancel" type="button">やめる</button>
+      </div>
+
+      <p id="message" role="status">種をまいて、最初の芽を出してみよう。</p>
+
+      <div class="controls">
+        <button id="sow" type="button">種をまく</button>
+      </div>
+
+      <p class="hint">「種をまく」を押すと素材が出ます。同じアイテム同士をドラッグで重ねると合体して、一段階育ちます。タイルをタップで選ぶと収穫できて、経験値が入ります。</p>
+
+      <details class="chain" aria-label="進化の流れ">
+        <summary>育ち方を見る</summary>
+        <ol id="chain-list"></ol>
+      </details>
+    </main>
+
+    <div id="ghost" aria-hidden="true"></div>
+
+    <script>
+      "use strict";
+
+      var COLS = 7, ROWS = 8, N = COLS * ROWS;
+
+      var STAGES = [
+        null,
+        { name: "月の種" },
+        { name: "双葉" },
+        { name: "小さな苗" },
+        { name: "若い薬草" },
+        { name: "花つき薬草" },
+        { name: "薬草の束" },
+        { name: "抽出液の小瓶" },
+        { name: "ポーション" },
+        { name: "上級ポーション" },
+        { name: "エリクサー" }
+      ];
+
+      var HARVEST_XP = [0, 1, 2, 3, 5, 8, 12, 18, 25, 35, 50]; // by stage
+      var XP_TABLE = { 1: 20, 2: 35, 3: 60, 4: 100, 5: 160 }; // XP to leave that level
+      function xpNeed(level) { return XP_TABLE[level] || 160; } // Lv6+ stays 160
+
+      // Player level that opens the cell. Center 5x5 (rows 1-5, cols 1-5) opens at Lv1.
+      function lockLevel(r, c) {
+        if (r >= 1 && r <= 5 && c >= 1 && c <= 5) return 1;
+        if (r === 6) return 2;
+        if (r === 0) return 3;
+        if (r === 7) return 6;
+        if (c === 0) return 4;
+        return 5; // right column (c === 6)
+      }
+      function isOpen(r, c) { return playerLevel >= lockLevel(r, c); }
+
+      var board = new Array(N).fill(0); // 0 = empty, 1..10 = stage
+      var playerLevel = 1;
+      var playerXp = 0; // XP accumulated toward the next level
+      var selectedIdx = -1;
+      var flashCells = {}; // idx -> true: cells that just unlocked (one render only)
+
+      var boardEl = document.getElementById("board");
+      var msgEl = document.getElementById("message");
+      var ghostEl = document.getElementById("ghost");
+      var lvBadge = document.getElementById("lv-badge");
+      var xpFill = document.getElementById("xp-fill");
+      var xpText = document.getElementById("xp-text");
+      var harvestBar = document.getElementById("harvest-bar");
+      var harvestName = document.getElementById("harvest-name");
+      var harvestBtn = document.getElementById("harvest-btn");
+      var cellEls = [];
+
+      var LOCK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><rect x="5" y="10.5" width="14" height="9.5" rx="2" fill="currentColor" stroke="none" opacity="0.55"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>';
+
+      function buildBoard() {
+        boardEl.innerHTML = "";
+        cellEls = [];
+        for (var r = 0; r < ROWS; r++) {
+          for (var c = 0; c < COLS; c++) {
+            var idx = r * COLS + c;
+            var cell = document.createElement("div");
+            cell.className = "cell";
+            cell.dataset.r = r;
+            cell.dataset.c = c;
+            if (!isOpen(r, c)) {
+              cell.classList.add("locked");
+              cell.innerHTML = LOCK_SVG + '<span class="lock-lv">Lv' + lockLevel(r, c) + "</span>";
+            } else if (flashCells[idx]) {
+              cell.classList.add("unlock-flash");
+            }
+            boardEl.appendChild(cell);
+            cellEls.push(cell);
+          }
+        }
+        flashCells = {};
+      }
+
+      function tileImg(stage) {
+        return "stage" + (stage < 10 ? "0" : "") + stage + ".png";
+      }
+      function tileHTML(stage) {
+        return '<img src="' + tileImg(stage) + '" alt="' + STAGES[stage].name + '" draggable="false" /><span class="num">' + stage + "</span>";
+      }
+
+      function render(animIdx, animClass) {
+        for (var i = 0; i < N; i++) {
+          var cell = cellEls[i];
+          var old = cell.querySelector(".tile");
+          if (old) old.remove();
+          var s = board[i];
+          if (s > 0) {
+            var t = document.createElement("div");
+            t.className = "tile s" + s + (i === animIdx ? " " + animClass : "") + (i === selectedIdx ? " selected" : "");
+            t.dataset.idx = i;
+            t.innerHTML = tileHTML(s);
+            cell.appendChild(t);
+          }
+        }
+      }
+
+      function setMsg(text) { msgEl.textContent = text; }
+
+      /* ---------- HUD: level badge + XP bar ---------- */
+      function updateHud() {
+        lvBadge.textContent = "LV " + playerLevel;
+        var need = xpNeed(playerLevel);
+        xpFill.style.width = Math.min(100, Math.round((playerXp / need) * 100)) + "%";
+        xpText.textContent = "経験値 " + playerXp + " / " + need;
+      }
+
+      /* ---------- Selection + harvest bar ---------- */
+      function updateHarvestBar() {
+        if (selectedIdx >= 0 && board[selectedIdx] > 0) {
+          var s = board[selectedIdx];
+          harvestName.textContent = STAGES[s].name + "（段階" + s + "）";
+          harvestBtn.textContent = "収穫する（経験値 +" + HARVEST_XP[s] + "）";
+          harvestBar.hidden = false;
+        } else {
+          harvestBar.hidden = true;
+        }
+      }
+      function select(idx) {
+        selectedIdx = idx;
+        render(-1, "");
+        updateHarvestBar();
+      }
+
+      /* ---------- XP + level up ---------- */
+      // Returns { leveled, grew } — grew = new board cells opened.
+      function addXp(n) {
+        playerXp += n;
+        var wasOpen = [];
+        for (var i = 0; i < N; i++) wasOpen.push(isOpen(Math.floor(i / COLS), i % COLS));
+        var leveled = false;
+        while (playerXp >= xpNeed(playerLevel)) {
+          playerXp -= xpNeed(playerLevel);
+          playerLevel++;
+          leveled = true;
+        }
+        var grew = false;
+        if (leveled) {
+          flashCells = {};
+          for (var j = 0; j < N; j++) {
+            if (!wasOpen[j] && isOpen(Math.floor(j / COLS), j % COLS)) { flashCells[j] = true; grew = true; }
+          }
+          buildBoard();
+          lvBadge.classList.remove("bump");
+          void lvBadge.offsetWidth; // restart the animation
+          lvBadge.classList.add("bump");
+        }
+        updateHud();
+        return { leveled: leveled, grew: grew };
+      }
+
+      /* ---------- Persistence (autosave) ---------- */
+      var SAVE_KEY = "witch-atelier-save-v1";
+      function saveData() {
+        return { app: "witch-atelier", version: 1, board: board.slice(), level: playerLevel, xp: playerXp };
+      }
+      function saveGame() {
+        try {
+          localStorage.setItem(SAVE_KEY, JSON.stringify(saveData()));
+        } catch (e) {
+          setMsg("保存できませんでした。メニューから書き出しておくと安心だよ。");
+        }
+      }
+      function validSave(d) {
+        if (!d || typeof d !== "object") return false;
+        if (!Array.isArray(d.board) || d.board.length !== N) return false;
+        for (var i = 0; i < N; i++) {
+          var v = d.board[i];
+          if (typeof v !== "number" || Math.floor(v) !== v || v < 0 || v > 10) return false;
+        }
+        if (typeof d.level !== "number" || Math.floor(d.level) !== d.level || d.level < 1) return false;
+        if (typeof d.xp !== "number" || !(d.xp >= 0)) return false;
+        return true;
+      }
+      function applySave(d) {
+        board = d.board.slice();
+        playerLevel = d.level;
+        playerXp = d.xp;
+        // Tolerate hand-edited files: fold any XP overflow into levels,
+        // and drop tiles sitting in cells that are locked at this level.
+        while (playerXp >= xpNeed(playerLevel)) { playerXp -= xpNeed(playerLevel); playerLevel++; }
+        for (var i = 0; i < N; i++) {
+          if (board[i] > 0 && !isOpen(Math.floor(i / COLS), i % COLS)) board[i] = 0;
+        }
+        selectedIdx = -1;
+        buildBoard();
+        render(-1, "");
+        updateHud();
+        updateHarvestBar();
+      }
+      function loadGame() {
+        try {
+          var raw = localStorage.getItem(SAVE_KEY);
+          if (!raw) return false;
+          var d = JSON.parse(raw);
+          if (!validSave(d)) return false;
+          board = d.board.slice();
+          playerLevel = d.level;
+          playerXp = d.xp;
+          while (playerXp >= xpNeed(playerLevel)) { playerXp -= xpNeed(playerLevel); playerLevel++; }
+          for (var i = 0; i < N; i++) {
+            if (board[i] > 0 && !isOpen(Math.floor(i / COLS), i % COLS)) board[i] = 0;
+          }
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      /* ---------- Sow ---------- */
+      var sowBtn = document.getElementById("sow");
+      sowBtn.addEventListener("click", function () {
+        var empties = [];
+        for (var i = 0; i < N; i++) {
+          var r = Math.floor(i / COLS), c = i % COLS;
+          if (isOpen(r, c) && board[i] === 0) empties.push(i);
+        }
+        if (empties.length === 0) {
+          setMsg("盤面がいっぱいです。合体させて空きを作ってね。");
+          return;
+        }
+        var idx = empties[Math.floor(Math.random() * empties.length)];
+        var stage = Math.random() < 0.9 ? 1 : 2;
+        board[idx] = stage;
+        render(idx, "spawn");
+        setMsg(stage === 2 ? "双葉が出てきた。" : "月の種をまいた。");
+        saveGame();
+      });
+
+      /* ---------- Harvest ---------- */
+      harvestBtn.addEventListener("click", function () {
+        if (selectedIdx < 0 || board[selectedIdx] === 0) { select(-1); return; }
+        var s = board[selectedIdx];
+        var gain = HARVEST_XP[s];
+        board[selectedIdx] = 0;
+        selectedIdx = -1;
+        var res = addXp(gain);
+        render(-1, "");
+        updateHarvestBar();
+        saveGame();
+        if (res.leveled && res.grew) {
+          setMsg("レベルアップ！ LV" + playerLevel + " になった。工房が広がったよ！");
+        } else if (res.leveled) {
+          setMsg("レベルアップ！ LV" + playerLevel + " になったよ！");
+        } else {
+          setMsg(STAGES[s].name + "を収穫した。経験値 +" + gain + "。");
+        }
+      });
+      document.getElementById("harvest-cancel").addEventListener("click", function () { select(-1); });
+
+      /* ---------- Menu (export / import / reset live here) ---------- */
+      var menuBtn = document.getElementById("menu-btn");
+      var menuPanel = document.getElementById("menu-panel");
+      var menuStatus = document.getElementById("menu-status");
+      var exportBtn = document.getElementById("export-btn");
+      var importBtn = document.getElementById("import-btn");
+      var importFile = document.getElementById("import-file");
+      var importConfirm = document.getElementById("import-confirm");
+      var resetBtn = document.getElementById("reset");
+
+      function showMenuStatus(text, isError) {
+        menuStatus.textContent = text;
+        menuStatus.classList.toggle("error", !!isError);
+        menuStatus.hidden = false;
+      }
+      function hideMenuStatus() { menuStatus.hidden = true; menuStatus.textContent = ""; }
+
+      var resetTimer = null;
+      function disarmReset() {
+        resetBtn.classList.remove("confirm");
+        resetBtn.textContent = "リセット（レベルも最初から）";
+        if (resetTimer) { clearTimeout(resetTimer); resetTimer = null; }
+      }
+      function closeMenu() {
+        menuPanel.hidden = true;
+        menuBtn.setAttribute("aria-expanded", "false");
+        importConfirm.hidden = true;
+        pendingImport = null;
+        disarmReset();
+      }
+      menuBtn.addEventListener("click", function () {
+        if (menuPanel.hidden) {
+          hideMenuStatus();
+          menuPanel.hidden = false;
+          menuBtn.setAttribute("aria-expanded", "true");
+        } else {
+          closeMenu();
+        }
+      });
+      document.addEventListener("pointerdown", function (e) {
+        if (!menuPanel.hidden && !e.target.closest(".menu-wrap")) closeMenu();
+      });
+
+      /* ---------- JSON export ---------- */
+      exportBtn.addEventListener("click", function () {
+        var blob = new Blob([JSON.stringify(saveData(), null, 2)], { type: "application/json" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "witch-atelier-save.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+        showMenuStatus("書き出したよ。ダウンロードに入ったファイルが控えになるよ。", false);
+      });
+
+      /* ---------- JSON import (validate, then confirm before overwrite) ---------- */
+      var pendingImport = null;
+      importBtn.addEventListener("click", function () {
+        importFile.value = "";
+        importFile.click();
+      });
+      importFile.addEventListener("change", function () {
+        var file = importFile.files && importFile.files[0];
+        if (!file) return;
+        importBtn.disabled = true;
+        exportBtn.disabled = true;
+        var settled = false;
+        var timer = setTimeout(function () {
+          if (settled) return;
+          settled = true;
+          importBtn.disabled = false;
+          exportBtn.disabled = false;
+          showMenuStatus("読み込みに時間がかかりすぎたよ。もう一度試してみてね。", true);
+        }, 20000);
+        function finish() {
+          settled = true;
+          clearTimeout(timer);
+          importBtn.disabled = false;
+          exportBtn.disabled = false;
+        }
+        var reader = new FileReader();
+        reader.onload = function () {
+          if (settled) return;
+          finish();
+          var d;
+          try {
+            d = JSON.parse(String(reader.result));
+          } catch (e) {
+            showMenuStatus("そのファイルは読み込めなかったよ。書き出したJSONファイルか確かめてね。", true);
+            return;
+          }
+          if (!validSave(d)) {
+            showMenuStatus("データの形が違うみたい。中身が壊れているかもしれないよ。", true);
+            return;
+          }
+          pendingImport = d;
+          importConfirm.hidden = false;
+          hideMenuStatus();
+        };
+        reader.onerror = function () {
+          if (settled) return;
+          finish();
+          showMenuStatus("ファイルが読み取れなかったよ。", true);
+        };
+        reader.readAsText(file);
+      });
+      document.getElementById("import-yes").addEventListener("click", function () {
+        if (!pendingImport) return;
+        var d = pendingImport;
+        pendingImport = null;
+        importConfirm.hidden = true;
+        applySave(d);
+        saveGame();
+        closeMenu();
+        setMsg("データを読み込んだよ。おかえりなさい。");
+      });
+      document.getElementById("import-no").addEventListener("click", function () {
+        pendingImport = null;
+        importConfirm.hidden = true;
+      });
+
+      /* ---------- Reset (two-tap confirm, inside the menu) ---------- */
+      resetBtn.addEventListener("click", function () {
+        if (!resetBtn.classList.contains("confirm")) {
+          resetBtn.classList.add("confirm");
+          resetBtn.textContent = "本当に消す？（盤面・レベル・経験値が全部消えます）";
+          resetTimer = setTimeout(disarmReset, 3000);
+          return;
+        }
+        board = new Array(N).fill(0);
+        playerLevel = 1;
+        playerXp = 0;
+        selectedIdx = -1;
+        buildBoard();
+        render(-1, "");
+        updateHud();
+        updateHarvestBar();
+        saveGame();
+        disarmReset();
+        closeMenu();
+        setMsg("工房を片付けた。レベルも最初から。また種をまこう。");
+      });
+
+      /* ---------- Drag & drop (pointer events: touch + mouse) ---------- */
+      var drag = null; // {src, stage, active, x, y}
+
+      function cellFromPoint(x, y) {
+        var rect = boardEl.getBoundingClientRect();
+        if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) return -1;
+        var c = Math.floor((x - rect.left) / (rect.width / COLS));
+        var r = Math.floor((y - rect.top) / (rect.height / ROWS));
+        if (!isOpen(r, c)) return -1;
+        return r * COLS + c;
+      }
+
+      function clearDropHighlight() {
+        var h = boardEl.querySelector(".cell.drop-target");
+        if (h) h.classList.remove("drop-target");
+      }
+
+      boardEl.addEventListener("pointerdown", function (e) {
+        var tile = e.target.closest(".tile");
+        if (!tile) {
+          if (selectedIdx >= 0) select(-1); // tap on empty/locked cell clears selection
+          return;
+        }
+        e.preventDefault();
+        var idx = parseInt(tile.dataset.idx, 10);
+        drag = { src: idx, stage: board[idx], active: false, sx: e.clientX, sy: e.clientY, target: -1 };
+        boardEl.setPointerCapture(e.pointerId);
+      });
+
+      boardEl.addEventListener("pointermove", function (e) {
+        if (!drag) return;
+        if (!drag.active) {
+          if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 6) return;
+          drag.active = true;
+          var srcTile = cellEls[drag.src].querySelector(".tile");
+          if (srcTile) srcTile.classList.add("drag-src");
+          var rect = boardEl.getBoundingClientRect();
+          var size = rect.width / COLS - 4;
+          ghostEl.style.width = size + "px";
+          ghostEl.style.height = size + "px";
+          ghostEl.className = "s" + drag.stage;
+          ghostEl.innerHTML = tileHTML(drag.stage);
+          ghostEl.style.display = "flex";
+        }
+        ghostEl.style.left = e.clientX + "px";
+        ghostEl.style.top = e.clientY + "px";
+        clearDropHighlight();
+        var t = cellFromPoint(e.clientX, e.clientY);
+        drag.target = t;
+        if (t >= 0 && t !== drag.src) cellEls[t].classList.add("drop-target");
+      });
+
+      function endDrag(commit) {
+        if (!drag) return;
+        var d = drag;
+        drag = null;
+        ghostEl.style.display = "none";
+        clearDropHighlight();
+        if (!commit) { render(-1, ""); return; }
+        if (!d.active) {
+          // Simple tap (no drag): toggle selection for harvesting.
+          if (selectedIdx === d.src) {
+            select(-1);
+          } else {
+            select(d.src);
+            setMsg(STAGES[d.stage].name + "を選んだ。下のボタンで収穫できるよ。");
+          }
+          return;
+        }
+        var t = d.target, s = d.src;
+        if (t < 0 || t === s) { render(-1, ""); return; }
+        var follow = (selectedIdx === s || selectedIdx === t); // selection follows the tile
+        if (board[t] === 0) {
+          board[t] = d.stage;
+          board[s] = 0;
+          if (follow) selectedIdx = t;
+          render(-1, "");
+          setMsg(STAGES[d.stage].name + "を置いた。");
+        } else if (board[t] === d.stage && d.stage < 10) {
+          board[t] = d.stage + 1;
+          board[s] = 0;
+          if (follow) selectedIdx = t;
+          render(t, "pop");
+          setMsg(d.stage + 1 === 10 ? "エリクサーになった！" : STAGES[d.stage + 1].name + "に育った。");
+        } else if (board[t] === d.stage && d.stage === 10) {
+          render(-1, "");
+          setMsg("エリクサー同士は合体しないよ。");
+          return;
+        } else {
+          var tmp = board[t];
+          board[t] = d.stage;
+          board[s] = tmp;
+          if (follow) selectedIdx = t;
+          render(-1, "");
+          setMsg("場所を入れ替えた。");
+        }
+        updateHarvestBar();
+        saveGame();
+      }
+
+      boardEl.addEventListener("pointerup", function () { endDrag(true); });
+      boardEl.addEventListener("pointercancel", function () { endDrag(false); });
+
+      /* ---------- Chain legend ---------- */
+      var chainEl = document.getElementById("chain-list");
+      for (var s2 = 1; s2 <= 10; s2++) {
+        var li = document.createElement("li");
+        li.className = "chip s" + s2;
+        li.innerHTML = "<b>" + s2 + '</b><img src="' + tileImg(s2) + '" alt="" />' + STAGES[s2].name;
+        chainEl.appendChild(li);
+        if (s2 < 10) {
+          var ar = document.createElement("li");
+          ar.className = "arrow";
+          ar.textContent = "→";
+          chainEl.appendChild(ar);
+        }
+      }
+
+      var hadSave = loadGame();
+      buildBoard();
+      render(-1, "");
+      updateHud();
+      updateHarvestBar();
+      if (hadSave) setMsg("おかえりなさい。工房の続きだよ。");
+    </script>
+      <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("sw.js").catch(function () {});
+        });
+      }
+    </script>
+  </body>
+</html>
