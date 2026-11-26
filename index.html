@@ -116,7 +116,7 @@
         70% { transform: scale(1.08); }
         100% { transform: scale(1); }
       }
-      .xp-wrap { min-width: 104px; padding-top: 3px; }
+      .xp-wrap { min-width: 84px; padding-top: 3px; }
       .xp-bar {
         height: 10px;
         background: var(--locked);
@@ -139,7 +139,60 @@
         white-space: nowrap;
       }
 
+      .top-actions { display: flex; gap: 8px; align-items: flex-start; flex: none; position: relative; }
       .menu-wrap { position: relative; flex: none; }
+      .help-wrap { position: static; flex: none; }
+      #help-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: inherit;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--ink);
+        background: var(--panel);
+        border: 1px solid var(--panel-edge);
+        border-radius: 12px;
+        padding: 9px 12px;
+        min-height: 40px;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+      #help-btn svg { width: 16px; height: 18px; flex: none; }
+      #help-panel {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 8px);
+        width: 302px;
+        max-width: calc(100vw - 28px);
+        max-height: min(72vh, 540px);
+        overflow-y: auto;
+        background: var(--panel);
+        border: 1px solid var(--panel-edge);
+        border-radius: 14px;
+        box-shadow: 0 10px 26px rgba(10, 4, 18, 0.5);
+        padding: 14px;
+        z-index: 40;
+      }
+      #help-panel[hidden] { display: none; }
+      .help-title {
+        font-size: 0.88rem;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        color: var(--ink);
+        margin: 0 0 6px;
+      }
+      #help-panel .help-title:not(:first-child) { margin-top: 14px; }
+      .help-text {
+        font-size: 0.82rem;
+        line-height: 1.65;
+        color: var(--ink-soft);
+        margin: 0 0 14px;
+      }
+      #help-panel .chain { margin-top: 0; background: transparent; border: none; padding: 0; }
       #menu-btn {
         display: inline-flex;
         align-items: center;
@@ -402,31 +455,74 @@
       .s9  { background: #a37fc0; color: #3e2a52; box-shadow: 0 0 9px rgba(163, 127, 192, 0.55), 0 1px 3px rgba(16, 6, 24, 0.4); }
       .s10 { background: #bfa96f; color: #4d4225; box-shadow: 0 0 11px rgba(191, 169, 111, 0.6), 0 1px 3px rgba(16, 6, 24, 0.4); }
 
-      /* ---------- Harvest bar (shown while a tile is selected) ---------- */
-      #harvest-bar {
+      /* ---------- Bottom row: info box (left) + tall sow button (right) ---------- */
+      .bottom-row {
+        display: flex;
+        gap: 10px;
+        align-items: stretch;
+        height: 84px;
+        margin-top: 12px;
+      }
+      #info-box {
+        flex: 2.7;
+        min-width: 0;
+        background: var(--panel);
+        border: 1px solid var(--panel-edge);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        padding: 10px 12px;
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-top: 12px;
-        background: var(--panel);
-        border: 1px solid var(--drop);
-        border-radius: 14px;
-        padding: 8px 8px 8px 14px;
-        box-shadow: var(--shadow);
       }
-      #harvest-bar[hidden] { display: none; }
-      #harvest-name { flex: 1; font-size: 0.88rem; font-weight: 700; line-height: 1.35; }
+      #info-box.has-selection { border-color: var(--drop); }
+      #info-idle { width: 100%; }
+      #message {
+        font-size: 0.85rem;
+        font-weight: 700;
+        line-height: 1.55;
+        color: var(--ink);
+        margin: 0;
+      }
+      #info-sel {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 4px;
+      }
+      #info-sel[hidden] { display: none; }
+      .sel-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      #harvest-name { font-size: 0.88rem; font-weight: 700; line-height: 1.35; min-width: 0; }
+      #harvest-exp {
+        flex: none;
+        font-size: 0.85rem;
+        font-weight: 900;
+        color: var(--drop);
+        white-space: nowrap;
+      }
+      .sel-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 6px;
+      }
       #harvest-btn {
         flex: none;
         font-family: inherit;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 900;
         color: var(--accent-ink);
         background: var(--accent);
         border: none;
-        border-radius: 11px;
-        padding: 11px 13px;
-        min-height: 44px;
+        border-radius: 10px;
+        padding: 7px 14px;
+        min-height: 34px;
         cursor: pointer;
         white-space: nowrap;
       }
@@ -434,47 +530,42 @@
       #harvest-cancel {
         flex: none;
         font-family: inherit;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-weight: 700;
         color: var(--ink-soft);
         background: transparent;
         border: 1px solid var(--panel-edge);
-        border-radius: 11px;
-        padding: 10px 10px;
-        min-height: 44px;
+        border-radius: 10px;
+        padding: 6px 10px;
+        min-height: 34px;
         cursor: pointer;
-      }
-
-      /* ---------- Message / controls ---------- */
-      #message {
-        min-height: 1.5em;
-        text-align: center;
-        font-size: 0.9rem;
-        font-weight: 700;
-        color: var(--ink);
-        margin: 14px 4px 10px;
-      }
-      .controls {
-        display: flex;
-        gap: 10px;
-        align-items: stretch;
       }
       #sow {
         flex: 1;
         font-family: inherit;
-        font-size: 1.12rem;
-        font-weight: 900;
-        letter-spacing: 0.05em;
         color: var(--accent-ink);
         background: var(--accent);
         border: none;
         border-radius: 14px;
-        padding: 14px 10px;
-        min-height: 52px;
+        padding: 10px 6px;
         cursor: pointer;
         box-shadow: var(--shadow);
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        touch-action: manipulation;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       #sow:active { background: var(--accent-deep); transform: translateY(1px); }
+      #sow img {
+        width: 38px;
+        height: 38px;
+        object-fit: contain;
+        display: block;
+        pointer-events: none;
+      }
 
       .hint {
         text-align: center;
@@ -484,37 +575,11 @@
         margin: 12px 6px 0;
       }
 
-      /* ---------- Chain legend (collapsible, closed by default) ---------- */
+      /* ---------- Chain legend (inside the help panel) ---------- */
       .chain {
-        margin-top: 20px;
-        background: var(--panel);
-        border: 1px solid var(--panel-edge);
-        border-radius: 14px;
-        padding: 10px 12px 12px;
+        margin-top: 0;
+        padding: 0;
       }
-      .chain summary {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        min-height: 2rem;
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: var(--ink-soft);
-        letter-spacing: 0.05em;
-        cursor: pointer;
-        list-style: none;
-        -webkit-tap-highlight-color: transparent;
-      }
-      .chain summary::-webkit-details-marker { display: none; }
-      .chain summary::after {
-        content: "▾";
-        font-size: 0.8rem;
-        color: var(--drop);
-        transition: transform 0.2s ease;
-      }
-      .chain[open ] summary { margin-bottom: 8px; }
-      .chain[open ] summary::after { transform: rotate(180deg); }
       .chain ol {
         list-style: none;
         margin: 0;
@@ -569,6 +634,21 @@
             <div id="xp-text">経験値 0 / 20</div>
           </div>
         </div>
+        <div class="top-actions">
+        <div class="help-wrap">
+          <button id="help-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="help-panel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5C10.2 3.9 7.6 3.2 4.5 3.5v14.2c3.1-.3 5.7.4 7.5 2 1.8-1.6 4.4-2.3 7.5-2V3.5c-3.1-.3-5.7.4-7.5 2z"/><path d="M12 5.5v14.2"/></svg>
+            説明
+          </button>
+          <div id="help-panel" hidden>
+            <h2 class="help-title">遊び方</h2>
+            <p class="help-text">種をまいて、最初の芽を出してみよう。「種をまく」を押すと素材が出ます。同じアイテム同士をドラッグで重ねると合体して、一段階育ちます。タイルをタップで選ぶと収穫できて、経験値が入ります。「種をまく」は長押しすると、続けて種をまけます。</p>
+            <h2 class="help-title">育ち方</h2>
+            <div class="chain" aria-label="進化の流れ">
+              <ol id="chain-list"></ol>
+            </div>
+          </div>
+        </div>
         <div class="menu-wrap">
           <button id="menu-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="menu-panel">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
@@ -590,6 +670,7 @@
             <button id="reset" class="menu-item danger" type="button">リセット（レベルも最初から）</button>
           </div>
         </div>
+        </div>
       </header>
 
       <img class="banner" src="banner.webp" alt="魔女の薬草工房の棚。光るポーションの瓶と吊るした薬草、丸窓の向こうの三日月と、眠る黒猫" />
@@ -602,24 +683,25 @@
         <div id="board" aria-label="薬草工房のボード"></div>
       </div>
 
-      <div id="harvest-bar" hidden>
-        <span id="harvest-name"></span>
-        <button id="harvest-btn" type="button">収穫する</button>
-        <button id="harvest-cancel" type="button">やめる</button>
+      <div class="bottom-row">
+        <div id="info-box">
+          <div id="info-idle">
+            <p id="message" role="status">種をまいて、育ててみよう。同じものを重ねると合体するよ。</p>
+          </div>
+          <div id="info-sel" hidden>
+            <div class="sel-top">
+              <span id="harvest-name"></span>
+              <span id="harvest-exp"></span>
+            </div>
+            <div class="sel-actions">
+              <button id="harvest-cancel" type="button">やめる</button>
+              <button id="harvest-btn" type="button">収穫</button>
+            </div>
+          </div>
+        </div>
+        <button id="sow" type="button" aria-label="種をまく"><img src="stage01.png" alt="" draggable="false" /></button>
       </div>
 
-      <p id="message" role="status">種をまいて、最初の芽を出してみよう。</p>
-
-      <div class="controls">
-        <button id="sow" type="button">種をまく</button>
-      </div>
-
-      <p class="hint">「種をまく」を押すと素材が出ます。同じアイテム同士をドラッグで重ねると合体して、一段階育ちます。タイルをタップで選ぶと収穫できて、経験値が入ります。</p>
-
-      <details class="chain" aria-label="進化の流れ">
-        <summary>育ち方を見る</summary>
-        <ol id="chain-list"></ol>
-      </details>
     </main>
 
     <div id="ghost" aria-hidden="true"></div>
@@ -670,12 +752,127 @@
       var lvBadge = document.getElementById("lv-badge");
       var xpFill = document.getElementById("xp-fill");
       var xpText = document.getElementById("xp-text");
-      var harvestBar = document.getElementById("harvest-bar");
+      var infoBox = document.getElementById("info-box");
+      var infoIdle = document.getElementById("info-idle");
+      var infoSel = document.getElementById("info-sel");
       var harvestName = document.getElementById("harvest-name");
+      var harvestExp = document.getElementById("harvest-exp");
       var harvestBtn = document.getElementById("harvest-btn");
       var cellEls = [];
 
       var LOCK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><rect x="5" y="10.5" width="14" height="9.5" rx="2" fill="currentColor" stroke="none" opacity="0.55"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>';
+
+      /* ---------- Sound effects (Web Audio for low latency, Audio element as fallback) ---------- */
+      var audioCtx = null;
+      var mergeBuffer = null;
+      var harvestBuffer = null;
+      var audioInitStarted = false;
+      var mergeAudio = null;
+      var harvestAudio = null;
+
+      function loadAudioBuffer(url, assign) {
+        if (!audioCtx) return;
+        function fail() {}
+        try {
+          if (window.fetch) {
+            fetch(url).then(function (res) { return res.arrayBuffer(); }).then(function (ab) {
+              if (!audioCtx) return;
+              var p = audioCtx.decodeAudioData(ab, assign, fail);
+              if (p && p.catch) p.catch(fail);
+            }).catch(fail);
+          } else {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.responseType = "arraybuffer";
+            xhr.onload = function () {
+              if (xhr.response && audioCtx) {
+                var p2 = audioCtx.decodeAudioData(xhr.response, assign, fail);
+                if (p2 && p2.catch) p2.catch(fail);
+              }
+            };
+            xhr.onerror = fail;
+            xhr.send();
+          }
+        } catch (e) {}
+      }
+
+      function initAudioContext() {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        if (!audioCtx) {
+          try { audioCtx = new AC(); } catch (e) { audioCtx = null; return; }
+        }
+        if (audioCtx.state === "suspended") {
+          try {
+            var rp = audioCtx.resume();
+            if (rp && rp.catch) rp.catch(function () {});
+          } catch (e) {}
+        }
+        if (!audioInitStarted) {
+          audioInitStarted = true;
+          loadAudioBuffer("merge.mp3", function (buf) { mergeBuffer = buf; });
+          loadAudioBuffer("harvest.mp3", function (buf) { harvestBuffer = buf; });
+        }
+      }
+
+      // Unlock / resume the context on the first and every later interaction,
+      // so buffers are decoded well before an effect is needed.
+      document.addEventListener("pointerdown", initAudioContext, true);
+      document.addEventListener("keydown", initAudioContext, true);
+
+      function playBuffer(buffer) {
+        if (!audioCtx || !buffer) return false;
+        try {
+          if (audioCtx.state === "suspended") {
+            var rp = audioCtx.resume();
+            if (rp && rp.catch) rp.catch(function () {});
+          }
+          var src = audioCtx.createBufferSource();
+          src.buffer = buffer;
+          var gainNode = audioCtx.createGain();
+          gainNode.gain.value = 0.8;
+          src.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          src.start(0);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function playMergeFallback() {
+        try {
+          if (!mergeAudio) {
+            mergeAudio = new Audio("merge.mp3");
+            mergeAudio.preload = "auto";
+            mergeAudio.volume = 0.8;
+          }
+          mergeAudio.currentTime = 0;
+          var p = mergeAudio.play();
+          if (p && p.catch) p.catch(function () {});
+        } catch (e) {}
+      }
+      function playHarvestFallback() {
+        try {
+          if (!harvestAudio) {
+            harvestAudio = new Audio("harvest.mp3");
+            harvestAudio.preload = "auto";
+            harvestAudio.volume = 0.8;
+          }
+          harvestAudio.currentTime = 0;
+          var p = harvestAudio.play();
+          if (p && p.catch) p.catch(function () {});
+        } catch (e) {}
+      }
+
+      function playMergeSound() {
+        if (playBuffer(mergeBuffer)) return;
+        playMergeFallback();
+      }
+      function playHarvestSound() {
+        if (playBuffer(harvestBuffer)) return;
+        playHarvestFallback();
+      }
 
       function buildBoard() {
         boardEl.innerHTML = "";
@@ -733,21 +930,27 @@
         xpText.textContent = "経験値 " + playerXp + " / " + need;
       }
 
-      /* ---------- Selection + harvest bar ---------- */
+      /* ---------- Selection + info box (guidance / harvest states) ---------- */
+      var GUIDE_TEXT = "種をまいて、育ててみよう。同じものを重ねると合体するよ。";
       function updateHarvestBar() {
         if (selectedIdx >= 0 && board[selectedIdx] > 0) {
           var s = board[selectedIdx];
           harvestName.textContent = STAGES[s].name + "（段階" + s + "）";
-          harvestBtn.textContent = "収穫する（経験値 +" + HARVEST_XP[s] + "）";
-          harvestBar.hidden = false;
+          harvestExp.textContent = "exp +" + HARVEST_XP[s];
+          infoIdle.hidden = true;
+          infoSel.hidden = false;
+          infoBox.classList.add("has-selection");
         } else {
-          harvestBar.hidden = true;
+          infoIdle.hidden = false;
+          infoSel.hidden = true;
+          infoBox.classList.remove("has-selection");
         }
       }
       function select(idx) {
         selectedIdx = idx;
         render(-1, "");
         updateHarvestBar();
+        if (idx < 0) setMsg(GUIDE_TEXT);
       }
 
       /* ---------- XP + level up ---------- */
@@ -835,9 +1038,9 @@
         }
       }
 
-      /* ---------- Sow ---------- */
+      /* ---------- Sow (tap = 1 seed, long-press = continuous) ---------- */
       var sowBtn = document.getElementById("sow");
-      sowBtn.addEventListener("click", function () {
+      function sowOnce() {
         var empties = [];
         for (var i = 0; i < N; i++) {
           var r = Math.floor(i / COLS), c = i % COLS;
@@ -845,7 +1048,7 @@
         }
         if (empties.length === 0) {
           setMsg("盤面がいっぱいです。合体させて空きを作ってね。");
-          return;
+          return false;
         }
         var idx = empties[Math.floor(Math.random() * empties.length)];
         var stage = Math.random() < 0.9 ? 1 : 2;
@@ -853,13 +1056,58 @@
         render(idx, "spawn");
         setMsg(stage === 2 ? "双葉が出てきた。" : "月の種をまいた。");
         saveGame();
+        return true;
+      }
+      var sowTimer = null;
+      var sowPointerActive = false;
+      var suppressSowClick = false;
+      function stopSowHold() {
+        sowPointerActive = false;
+        if (sowTimer) { clearInterval(sowTimer); sowTimer = null; }
+        // If this pointer produced no click event, don't let the flag eat a later keyboard click.
+        if (suppressSowClick) setTimeout(function () { suppressSowClick = false; }, 400);
+      }
+      sowBtn.addEventListener("pointerdown", function (e) {
+        e.preventDefault();
+        suppressSowClick = true;
+        if (sowPointerActive) return;
+        sowPointerActive = true;
+        if (!sowOnce()) { stopSowHold(); return; }
+        sowTimer = setInterval(function () {
+          if (!sowOnce()) stopSowHold();
+        }, 190);
+      });
+      sowBtn.addEventListener("pointerup", stopSowHold);
+      sowBtn.addEventListener("pointerleave", stopSowHold);
+      sowBtn.addEventListener("pointercancel", stopSowHold);
+      window.addEventListener("pointerup", stopSowHold);
+      window.addEventListener("blur", stopSowHold);
+      sowBtn.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+      sowBtn.addEventListener("click", function () {
+        // Pointer taps are handled on pointerdown; click only serves keyboard activation.
+        if (suppressSowClick) { suppressSowClick = false; return; }
+        sowOnce();
       });
 
       /* ---------- Harvest ---------- */
+      // Fire the sound at touch start (pointerdown), not after click completes,
+      // so it lines up with the tap. Click only plays it when no pointerdown
+      // preceded it (e.g. keyboard activation).
+      var harvestSoundAt = 0;
+      harvestBtn.addEventListener("pointerdown", function () {
+        initAudioContext();
+        if (selectedIdx < 0 || board[selectedIdx] === 0) return;
+        harvestSoundAt = Date.now();
+        playHarvestSound();
+      });
       harvestBtn.addEventListener("click", function () {
         if (selectedIdx < 0 || board[selectedIdx] === 0) { select(-1); return; }
         var s = board[selectedIdx];
         var gain = HARVEST_XP[s];
+        if (Date.now() - harvestSoundAt > 1000) {
+          playHarvestSound();
+        }
+        harvestSoundAt = 0;
         board[selectedIdx] = 0;
         selectedIdx = -1;
         var res = addXp(gain);
@@ -908,6 +1156,7 @@
       }
       menuBtn.addEventListener("click", function () {
         if (menuPanel.hidden) {
+          closeHelp();
           hideMenuStatus();
           menuPanel.hidden = false;
           menuBtn.setAttribute("aria-expanded", "true");
@@ -915,8 +1164,26 @@
           closeMenu();
         }
       });
+
+      /* ---------- Help panel (how-to + growth chain) ---------- */
+      var helpBtn = document.getElementById("help-btn");
+      var helpPanel = document.getElementById("help-panel");
+      function closeHelp() {
+        helpPanel.hidden = true;
+        helpBtn.setAttribute("aria-expanded", "false");
+      }
+      helpBtn.addEventListener("click", function () {
+        if (helpPanel.hidden) {
+          closeMenu();
+          helpPanel.hidden = false;
+          helpBtn.setAttribute("aria-expanded", "true");
+        } else {
+          closeHelp();
+        }
+      });
       document.addEventListener("pointerdown", function (e) {
         if (!menuPanel.hidden && !e.target.closest(".menu-wrap")) closeMenu();
+        if (!helpPanel.hidden && !e.target.closest(".help-wrap")) closeHelp();
       });
 
       /* ---------- JSON export ---------- */
@@ -1086,7 +1353,6 @@
             select(-1);
           } else {
             select(d.src);
-            setMsg(STAGES[d.stage].name + "を選んだ。下のボタンで収穫できるよ。");
           }
           return;
         }
@@ -1102,6 +1368,7 @@
         } else if (board[t] === d.stage && d.stage < 10) {
           board[t] = d.stage + 1;
           board[s] = 0;
+          playMergeSound();
           if (follow) selectedIdx = t;
           render(t, "pop");
           setMsg(d.stage + 1 === 10 ? "エリクサーになった！" : STAGES[d.stage + 1].name + "に育った。");
