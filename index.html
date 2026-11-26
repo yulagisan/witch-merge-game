@@ -68,7 +68,21 @@
         min-height: 100vh;
         -webkit-tap-highlight-color: transparent;
       }
+      .bg-decor {
+        position: fixed;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 430px;
+        height: auto;
+        display: block;
+        pointer-events: none;
+        z-index: 0;
+      }
       main {
+        position: relative;
+        z-index: 1;
         max-width: 430px;
         margin: 0 auto;
         padding: 14px 14px calc(env(safe-area-inset-bottom, 0px) + 36px);
@@ -224,6 +238,12 @@
         margin: 0 0 14px;
       }
       #help-panel .chain { margin-top: 0; background: transparent; border: none; padding: 0; }
+      .help-note {
+        font-size: 0.74rem;
+        line-height: 1.5;
+        color: var(--ink-soft);
+        margin: 6px 0 0;
+      }
       #menu-btn {
         display: inline-flex;
         align-items: center;
@@ -439,12 +459,66 @@
         100% { transform: scale(1); opacity: 1; }
       }
 
+      /* Harvest / collect: a departing copy floats up and fades, like being picked up and taken away.
+         Separate class from .tile so render() (which removes .tile) never touches it mid-flight. */
+      .harvest-floater {
+        position: absolute;
+        inset: 2px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3px;
+        box-shadow: 0 1px 3px rgba(16, 6, 24, 0.4);
+        border: 1px solid rgba(20, 8, 30, 0.25);
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 4;
+        animation: harvestfloat 0.45s ease-out forwards;
+        will-change: transform, opacity;
+      }
+      .harvest-floater img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        pointer-events: none;
+      }
+      .harvest-floater .num {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        min-width: 15px;
+        height: 15px;
+        padding: 0 3px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: rgba(24, 12, 34, 0.62);
+        color: #fff;
+        font-size: 0.58rem;
+        font-weight: 900;
+        line-height: 1;
+      }
+      @keyframes harvestfloat {
+        0% { transform: translateY(0) scale(1); opacity: 1; }
+        100% { transform: translateY(-42px) scale(0.92); opacity: 0; }
+      }
+
       /* Elixir celebration: golden glow pulse on the tile + sparkle burst (stage 10 merges only) */
       .tile.elixir-glow { animation: elixirglow 1.1s ease-out; }
       @keyframes elixirglow {
         0% { box-shadow: 0 0 11px rgba(191, 169, 111, 0.6), 0 1px 3px rgba(16, 6, 24, 0.4); }
         35% { box-shadow: 0 0 24px 7px rgba(242, 217, 140, 0.9), 0 1px 3px rgba(16, 6, 24, 0.4); }
         100% { box-shadow: 0 0 11px rgba(191, 169, 111, 0.6), 0 1px 3px rgba(16, 6, 24, 0.4); }
+      }
+      /* Moonlight mushroom celebration: same pulse, silver-white moonlight tones (stage 15 merges) */
+      .tile.moon-glow { animation: moonglow 1.1s ease-out; }
+      @keyframes moonglow {
+        0% { box-shadow: 0 0 11px rgba(199, 214, 228, 0.6), 0 1px 3px rgba(16, 6, 24, 0.4); }
+        35% { box-shadow: 0 0 24px 7px rgba(228, 240, 252, 0.95), 0 1px 3px rgba(16, 6, 24, 0.4); }
+        100% { box-shadow: 0 0 11px rgba(199, 214, 228, 0.6), 0 1px 3px rgba(16, 6, 24, 0.4); }
       }
       .elixir-burst {
         position: absolute;
@@ -514,6 +588,11 @@
       .s8  { background: #8f96c8; color: #2e3354; }
       .s9  { background: #a37fc0; color: #3e2a52; box-shadow: 0 0 9px rgba(163, 127, 192, 0.55), 0 1px 3px rgba(16, 6, 24, 0.4); }
       .s10 { background: #bfa96f; color: #4d4225; box-shadow: 0 0 11px rgba(191, 169, 111, 0.6), 0 1px 3px rgba(16, 6, 24, 0.4); }
+      .s11 { background: #C9BBA7; color: #4d4436; }
+      .s12 { background: #B99B78; color: #46351f; }
+      .s13 { background: #A8B39A; color: #35402c; }
+      .s14 { background: #BCD6DA; color: #2e454b; }
+      .s15 { background: #C7D6E4; color: #33465a; }
 
       /* ---------- Bottom row: info box (left) + tall sow button (right) ---------- */
       .bottom-row {
@@ -625,8 +704,8 @@
       }
       #sow:active { background: var(--accent-deep); transform: translateY(1px); }
       #sow img {
-        width: 38px;
-        height: 38px;
+        width: 48px;
+        height: 48px;
         object-fit: contain;
         display: block;
         pointer-events: none;
@@ -707,13 +786,14 @@
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .tile.pop, .tile.spawn, #lv-badge.bump, .cell.unlock-flash, .tile.elixir-glow, .elixir-burst .spk { animation: none; }
+        .tile.pop, .tile.spawn, #lv-badge.bump, .cell.unlock-flash, .tile.elixir-glow, .tile.moon-glow, .elixir-burst .spk, .harvest-floater { animation: none; }
         #xp-fill { transition: none; }
         #sow:active { transform: none; }
       }
     </style>
   </head>
   <body>
+    <img class="bg-decor" src="bg-bottom.webp" alt="" aria-hidden="true" draggable="false" />
     <main>
       <header class="topbar">
         <div class="lv-block">
@@ -732,11 +812,16 @@
           </button>
           <div id="help-panel" hidden>
             <h2 class="help-title">遊び方</h2>
-            <p class="help-text">種をまいて、最初の芽を出してみよう。「種をまく」を押すと素材が出ます。同じアイテム同士をドラッグで重ねると合体して、一段階育ちます。タイルをタップで選ぶと回収できて、経験値が入ります。「種をまく」は長押しすると、続けて種をまけます。</p>
+            <p class="help-text">魔法をかけて、最初の芽を出してみよう。「魔法をかける」を押すと、月の種や双葉が現れます。同じアイテム同士をドラッグで重ねると合体して、一段階育ちます。小さな苗同士を合体させると、きのこが生えることがある。タイルをタップで選ぶと回収できて、経験値が入ります。「魔法をかける」は長押しすると、続けて魔法をかけられます。</p>
             <h2 class="help-title">育ち方</h2>
             <div class="chain" aria-label="進化の流れ">
               <ol id="chain-list"></ol>
             </div>
+            <h2 class="help-title">きのこの育ち方</h2>
+            <div class="chain" aria-label="きのこの進化の流れ">
+              <ol id="chain-list-mush"></ol>
+            </div>
+            <p class="help-note">小さな苗の合体から生まれることがある</p>
             <p class="help-credit">BGM: "Lili's Dream" by Alban_Gogh (Pixabay)</p>
           </div>
         </div>
@@ -776,7 +861,7 @@
       <div class="bottom-row">
         <div id="info-box">
           <div id="info-idle">
-            <p id="message" role="status">種をまいて、育ててみよう。同じものを重ねると合体するよ。</p>
+            <p id="message" role="status">魔法をかけて、育ててみよう。同じものを重ねると合体するよ。</p>
           </div>
           <div id="info-sel" hidden>
             <div class="sel-top">
@@ -789,7 +874,7 @@
             </div>
           </div>
         </div>
-        <button id="sow" type="button" aria-label="種をまく"><img src="stage01.png" alt="" draggable="false" /></button>
+        <button id="sow" type="button" aria-label="魔法をかける"><img src="wand.png" alt="" draggable="false" /></button>
       </div>
 
     </main>
@@ -812,10 +897,15 @@
         { name: "抽出液の小瓶" },
         { name: "ポーション" },
         { name: "上級ポーション" },
-        { name: "エリクサー" }
+        { name: "エリクサー" },
+        { name: "小さなきのこ" },
+        { name: "大きなきのこ" },
+        { name: "きのこの群生" },
+        { name: "光るきのこ" },
+        { name: "月光きのこ" }
       ];
 
-      var HARVEST_XP = [0, 1, 2, 3, 5, 8, 12, 18, 25, 35, 50]; // by stage
+      var HARVEST_XP = [0, 1, 2, 3, 5, 8, 12, 18, 25, 35, 50, 5, 8, 12, 18, 25]; // by stage (11-15 = mushroom line)
       var XP_TABLE = { 1: 20, 2: 35, 3: 60, 4: 100, 5: 160 }; // XP to leave that level
       function xpNeed(level) { return XP_TABLE[level] || 160; } // Lv6+ stays 160
 
@@ -830,7 +920,7 @@
       }
       function isOpen(r, c) { return playerLevel >= lockLevel(r, c); }
 
-      var board = new Array(N).fill(0); // 0 = empty, 1..10 = stage
+      var board = new Array(N).fill(0); // 0 = empty, 1..10 = herb stage, 11..15 = mushroom stage
       var playerLevel = 1;
       var playerXp = 0; // XP accumulated toward the next level
       var selectedIdx = -1;
@@ -965,7 +1055,7 @@
         playHarvestFallback();
       }
 
-      /* ---------- Elixir celebration (stage-10 merge only): synthesized chime + sparkle burst ---------- */
+      /* ---------- Line-top celebration (stage 10 and stage 15 merges): synthesized chime + sparkle burst ---------- */
       // No audio file: a short bell-like arpeggio (E6 -> G6 -> C7) on the shared
       // AudioContext. The BGM toggle governs effects too, so a muted game stays silent.
       function playElixirChime() {
@@ -1009,19 +1099,28 @@
       }
 
       var SPARKLE_PATH = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L14.4 9.6 L22 12 L14.4 14.4 L12 22 L9.6 14.4 L2 12 L9.6 9.6 Z" fill="currentColor"/></svg>';
+      // Shared celebration for the two line tops: golden for the elixir
+      // (stage 10), silver-white / pale blue moonlight for the moonlight
+      // mushroom (stage 15). Same glow pulse + sparkle burst, only the
+      // glow class and sparkle colors differ.
       function elixirCelebration(idx) {
+        sparkleCelebration(idx, "elixir-glow", ["#f2d98c", "#fff6d8", "#e8c877", "#f7e7ae"]);
+      }
+      function moonCelebration(idx) {
+        sparkleCelebration(idx, "moon-glow", ["#eef4fb", "#ffffff", "#c9ddef", "#dcecf8"]);
+      }
+      function sparkleCelebration(idx, glowClass, colors) {
         var cell = cellEls[idx];
         if (!cell) return;
         var tile = cell.querySelector(".tile");
         if (tile) {
-          tile.classList.add("elixir-glow");
-          setTimeout(function () { tile.classList.remove("elixir-glow"); }, 1200);
+          tile.classList.add(glowClass);
+          setTimeout(function () { tile.classList.remove(glowClass); }, 1200);
         }
         var burst = document.createElement("div");
         burst.className = "elixir-burst";
         burst.setAttribute("aria-hidden", "true");
         var offsets = [[-26, -22], [24, -26], [31, 5], [17, 26], [-18, 25], [-31, -3], [0, -33], [5, 33]];
-        var colors = ["#f2d98c", "#fff6d8", "#e8c877", "#f7e7ae"];
         for (var i = 0; i < offsets.length; i++) {
           var sp = document.createElement("span");
           sp.className = "spk";
@@ -1135,10 +1234,17 @@
       }
 
       function tileImg(stage) {
+        if (stage > 10) {
+          var m = stage - 10; // mushroom line: mush01..mush05
+          return "mush" + (m < 10 ? "0" : "") + m + ".png";
+        }
         return "stage" + (stage < 10 ? "0" : "") + stage + ".png";
       }
+      function tileBadge(stage) {
+        return stage > 10 ? stage - 10 : stage; // mushroom tiles show their in-line number (1-5)
+      }
       function tileHTML(stage) {
-        return '<img src="' + tileImg(stage) + '" alt="' + STAGES[stage].name + '" draggable="false" /><span class="num">' + stage + "</span>";
+        return '<img src="' + tileImg(stage) + '" alt="' + STAGES[stage].name + '" draggable="false" /><span class="num">' + tileBadge(stage) + "</span>";
       }
 
       function render(animIdx, animClass) {
@@ -1168,11 +1274,11 @@
       }
 
       /* ---------- Selection + info box (guidance / harvest states) ---------- */
-      var GUIDE_TEXT = "種をまいて、育ててみよう。同じものを重ねると合体するよ。";
+      var GUIDE_TEXT = "魔法をかけて、育ててみよう。同じものを重ねると合体するよ。";
       function updateHarvestBar() {
         if (selectedIdx >= 0 && board[selectedIdx] > 0) {
           var s = board[selectedIdx];
-          harvestName.textContent = STAGES[s].name + "（段階" + s + "）";
+          harvestName.textContent = STAGES[s].name + "（段階" + tileBadge(s) + "）";
           harvestExp.textContent = "exp +" + HARVEST_XP[s];
           infoIdle.hidden = true;
           infoSel.hidden = false;
@@ -1234,7 +1340,7 @@
         if (!Array.isArray(d.board) || d.board.length !== N) return false;
         for (var i = 0; i < N; i++) {
           var v = d.board[i];
-          if (typeof v !== "number" || Math.floor(v) !== v || v < 0 || v > 10) return false;
+          if (typeof v !== "number" || Math.floor(v) !== v || v < 0 || v > 15) return false;
         }
         if (typeof d.level !== "number" || Math.floor(d.level) !== d.level || d.level < 1) return false;
         if (typeof d.xp !== "number" || !(d.xp >= 0)) return false;
@@ -1291,7 +1397,7 @@
         var stage = Math.random() < 0.9 ? 1 : 2;
         board[idx] = stage;
         render(idx, "spawn");
-        setMsg(stage === 2 ? "双葉が出てきた。" : "月の種をまいた。");
+        setMsg(stage === 2 ? "双葉が出てきた。" : "魔法をかけた。月の種が現れた。");
         saveGame();
         return true;
       }
@@ -1339,18 +1445,37 @@
       });
       harvestBtn.addEventListener("click", function () {
         if (selectedIdx < 0 || board[selectedIdx] === 0) { select(-1); return; }
-        var s = board[selectedIdx];
+        var idx = selectedIdx;
+        var s = board[idx];
         var gain = HARVEST_XP[s];
         if (Date.now() - harvestSoundAt > 1000) {
           playHarvestSound();
         }
         harvestSoundAt = 0;
-        board[selectedIdx] = 0;
+        // Commit state immediately so the departing tile can never be
+        // selected, dragged, merged or harvested again, and rapid taps
+        // elsewhere operate on the already-updated board.
+        board[idx] = 0;
         selectedIdx = -1;
         var res = addXp(gain);
         render(-1, "");
         updateHarvestBar();
         saveGame();
+        // Visual only: float a non-interactive copy of the tile up and out.
+        // Skipped entirely under prefers-reduced-motion (instant removal above).
+        var reduceMotion = false;
+        try { reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+        if (!reduceMotion) {
+          var cell = cellEls[idx];
+          if (cell) {
+            var floater = document.createElement("div");
+            floater.className = "harvest-floater s" + s;
+            floater.setAttribute("aria-hidden", "true");
+            floater.innerHTML = tileHTML(s);
+            cell.appendChild(floater);
+            setTimeout(function () { floater.remove(); }, 520);
+          }
+        }
         if (res.leveled && res.grew) {
           setMsg("レベルアップ！ LV" + playerLevel + " になった。工房が広がったよ！");
         } else if (res.leveled) {
@@ -1522,7 +1647,7 @@
         saveGame();
         disarmReset();
         closeMenu();
-        setMsg("工房を片付けた。レベルも最初から。また種をまこう。");
+        setMsg("工房を片付けた。レベルも最初から。また魔法をかけよう。");
       });
 
       /* ---------- Drag & drop (pointer events: touch + mouse) ---------- */
@@ -1531,8 +1656,15 @@
       function cellFromPoint(x, y) {
         var rect = boardEl.getBoundingClientRect();
         if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) return -1;
-        var c = Math.floor((x - rect.left) / (rect.width / COLS));
-        var r = Math.floor((y - rect.top) / (rect.height / ROWS));
+        // The grid has 5px gaps between cells, so the true pitch is
+        // (size + gap) / count, not size / count. Dividing by the plain
+        // size drifts further off toward the bottom-right and can drop a
+        // tile onto a neighbouring cell the player never aimed at.
+        var pitchX = (rect.width + 5) / COLS;
+        var pitchY = (rect.height + 5) / ROWS;
+        var c = Math.floor((x - rect.left) / pitchX);
+        var r = Math.floor((y - rect.top) / pitchY);
+        if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return -1;
         if (!isOpen(r, c)) return -1;
         return r * COLS + c;
       }
@@ -1577,6 +1709,17 @@
         if (t >= 0 && t !== drag.src) cellEls[t].classList.add("drop-target");
       });
 
+      // The result of merging two tiles of the same stage — the single
+      // place in the game where a merge outcome is decided. Every stage
+      // simply advances by one, with exactly one branch: two stage-3
+      // seedlings (小さな苗) become a stage-4 herb or the first mushroom
+      // (stage 11), 50/50. No other stage, and no other action (sowing,
+      // moving, swapping, harvesting), can produce a mushroom.
+      function mergeResult(stage) {
+        if (stage === 3 && Math.random() < 0.5) return 11;
+        return stage + 1;
+      }
+
       function endDrag(commit) {
         if (!drag) return;
         var d = drag;
@@ -1602,22 +1745,27 @@
           if (follow) selectedIdx = t;
           render(-1, "");
           setMsg(STAGES[d.stage].name + "を置いた。");
-        } else if (board[t] === d.stage && d.stage < 10) {
-          board[t] = d.stage + 1;
+        } else if (board[t] === d.stage && d.stage !== 10 && d.stage !== 15) {
+          // Same-item merge: next stage up (see mergeResult for the one branch).
+          var result = mergeResult(d.stage);
+          board[t] = result;
           board[s] = 0;
-          var madeElixir = d.stage + 1 === 10;
-          if (madeElixir) {
-            playElixirChime(); // stage 10 celebrates with the chime instead of the merge sound
+          var madeElixir = result === 10;
+          var madeMoon = result === 15;
+          if (madeElixir || madeMoon) {
+            playElixirChime(); // both line tops celebrate with the chime instead of the merge sound
           } else {
             playMergeSound();
           }
           if (follow) selectedIdx = t;
           render(t, "pop");
           if (madeElixir) elixirCelebration(t);
-          setMsg(madeElixir ? "エリクサーになった！" : STAGES[d.stage + 1].name + "に育った。");
-        } else if (board[t] === d.stage && d.stage === 10) {
+          if (madeMoon) moonCelebration(t);
+          setMsg(madeElixir ? "エリクサーになった！" : madeMoon ? "月光きのこになった！" : STAGES[result].name + "に育った。");
+        } else if (board[t] === d.stage) {
+          // Line tops (stage 10 and stage 15) never merge.
           render(-1, "");
-          setMsg("エリクサー同士は合体しないよ。");
+          setMsg(STAGES[d.stage].name + "同士は合体しないよ。");
           return;
         } else {
           var tmp = board[t];
@@ -1642,6 +1790,13 @@
         li.innerHTML = '<span class="num">' + s2 + '</span><img src="' + tileImg(s2) + '" alt="" /><span class="chip-name">' + STAGES[s2].name + '</span><span class="chip-exp">exp +' + HARVEST_XP[s2] + "</span>";
         chainEl.appendChild(li);
       }
+      var chainMushEl = document.getElementById("chain-list-mush");
+      for (var s3 = 11; s3 <= 15; s3++) {
+        var li2 = document.createElement("li");
+        li2.className = "chip s" + s3;
+        li2.innerHTML = '<span class="num">' + tileBadge(s3) + '</span><img src="' + tileImg(s3) + '" alt="" /><span class="chip-name">' + STAGES[s3].name + '</span><span class="chip-exp">exp +' + HARVEST_XP[s3] + "</span>";
+        chainMushEl.appendChild(li2);
+      }
 
       var hadSave = loadGame();
       buildBoard();
@@ -1649,6 +1804,14 @@
       updateHud();
       updateHarvestBar();
       if (hadSave) setMsg("おかえりなさい。工房の続きだよ。");
+
+      // Keep the autosave on record even if the page is backgrounded or
+      // discarded without a further action: every mutation already saves,
+      // and this re-saves the same state as a backstop.
+      window.addEventListener("pagehide", saveGame);
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) saveGame();
+      });
     </script>
       <script>
       if ("serviceWorker" in navigator) {
