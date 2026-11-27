@@ -1,9 +1,9 @@
-/* Service worker for 魔女の薬草工房 (PWA export, cache v5).
+/* Service worker for 魔女の薬草工房 (PWA export, cache v6).
    Scope is relative ("."), so it works under a GitHub Pages project
    URL like https://<user>.github.io/<repo>/ as well as at a domain root.
    Google Fonts is deliberately NOT cached: first load needs network,
    offline it falls back to the system font stack already in index.html. */
-var CACHE = "witch-atelier-pwa-v5";
+var CACHE = "witch-atelier-pwa-v6";
 var ASSETS = [
   "./",
   "./index.html",
@@ -11,8 +11,9 @@ var ASSETS = [
   "./icon-192.png",
   "./icon-512.png",
   "./icon-512-maskable.png",
-  "./banner.webp",
-  "./bg-bottom.webp",
+  "./banner_wood.webp",
+  "./bg_wood.webp",
+  "./corner_ivy_vine.png",
   "./merge.mp3",
   "./harvest.mp3",
   "./bgm.mp3",
@@ -31,7 +32,7 @@ var ASSETS = [
   "./mush03.png",
   "./mush04.png",
   "./mush05.png",
-  "./wand.png"
+  "./flask_green.png"
 ];
 
 self.addEventListener("install", function (event) {
